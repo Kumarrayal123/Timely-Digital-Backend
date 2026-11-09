@@ -38,8 +38,11 @@ app.options('*', cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve static files from uploads folder
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// Serve static files from uploads folder with long-term caching
+app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
+  maxAge: '30d',
+  immutable: true,
+}));
 
 // Request logger
 app.use((req, res, next) => {
