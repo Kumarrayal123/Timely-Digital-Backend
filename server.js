@@ -24,7 +24,7 @@ connectDB().then(async () => {
 });
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 8555;
 
 // CORS configuration - Allow all origins and headers
 app.use(
