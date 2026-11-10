@@ -8,6 +8,7 @@ import leadRoutes from './routes/leadRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import blogRoutes from './routes/blogRoutes.js';
 import uploadRoutes from './routes/uploadRoutes.js';
+import bookingRoutes from './routes/bookingRoutes.js';
 import { initAdminUser } from './controllers/authController.js';
 import { initDefaultBlogs } from './controllers/blogController.js';
 
@@ -64,6 +65,8 @@ app.get('/', (req, res) => {
       consultationLeads: '/api/consultation-leads',
       leadStats: '/api/consultation-leads/stats',
       blogs: '/api/blogs',
+      bookings: '/api/bookings',
+      bookingStats: '/api/bookings/stats',
     },
     timestamp: new Date().toISOString(),
   });
@@ -84,6 +87,7 @@ app.use('/api/consultation-leads', leadRoutes);
 app.use('/api/leads', leadRoutes); // Alias
 app.use('/api/blogs', blogRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/bookings', bookingRoutes);
 
 // 404 handler
 app.use((req, res) => {
@@ -104,12 +108,25 @@ app.use((err, req, res, next) => {
 });
 
 // Start Server when run directly
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`===============================================`);
   console.log(`🚀 Timely Digital Server running on port ${PORT}`);
   console.log(`📡 Local: http://localhost:${PORT}`);
   console.log(`🔗 API Base: http://localhost:${PORT}/api/consultation-leads`);
   console.log(`===============================================`);
+});
+
+server.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`\n❌ Error: Port ${PORT} is already in use by another process.`);
+    console.error(`👉 Solution 1: Stop the process using port ${PORT} by running in PowerShell:`);
+    console.error(`   Stop-Process -Id (Get-NetTCPConnection -LocalPort ${PORT}).OwningProcess -Force`);
+    console.error(`   Or run: taskkill /F /IM node.exe\n`);
+    console.error(`👉 Solution 2: Change PORT in .env (e.g. PORT=5001 or PORT=8555)\n`);
+    process.exit(1);
+  } else {
+    console.error('Server error:', err);
+  }
 });
 
 export default app;
